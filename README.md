@@ -35,6 +35,9 @@
   <br />
 </div>
 
+<br />
+<br />
+
 #### Basic Usage
 
 ##### `Table`
@@ -64,7 +67,7 @@ const UsersTable = props => (
 export default UsersTable
 ```
 
-Read more about customizing `Table`'s functionality [here](./docs/table.md)
+Read more about customizing `Table`'s functionality [here](./docs/table.md).
 
 ##### `AjaxTable`
 
@@ -84,4 +87,4 @@ const UsersTable = props => (
 export default UsersTable
 ```
 
-Read more about customizing `AjaxTable`'s functionality [here](./docs/table.md)
+Read more about customizing `AjaxTable`'s functionality [here](./docs/ajax-table.md).
