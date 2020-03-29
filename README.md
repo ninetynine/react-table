@@ -34,3 +34,54 @@
   <br />
   <br />
 </div>
+
+#### Basic Usage
+
+##### `Table`
+
+Use `Table` when data is not retrieved from an API endpoint. It's simple to get started:
+
+```jsx
+import React from 'react'
+import Table from '@ninetynine/react-table'
+
+const UsersTable = props => (
+  <Table
+    {...props}
+    rows={[
+      {
+        id: 1,
+        name: 'Leanne Graham'
+      },
+      {
+        id: 2,
+        name: 'Ervin Howell'
+      }
+    ]}
+  />
+)
+
+export default UsersTable
+```
+
+Read more about customizing `Table`'s functionality [here](./docs/table.md)
+
+##### `AjaxTable`
+
+Use `AjaxTable` when data is being retrieved from an API endpoint. It is built on top of `Table` with a new minor tweaks:
+
+```jsx
+import React from 'react'
+import { AjaxTable } from '@ninetynine/react-table'
+
+const UsersTable = props => (
+  <AjaxTable
+    {...props}
+    url='https://jsonplaceholder.typicode.com/users'
+  />
+)
+
+export default UsersTable
+```
+
+Read more about customizing `AjaxTable`'s functionality [here](./docs/table.md)
