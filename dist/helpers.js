@@ -11,20 +11,24 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Pages = exports.PageLimit = void 0;
 
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
 var PageLimit = function PageLimit(_ref) {
   var value = _ref.value,
       onChange = _ref.onChange;
-  return /*#__PURE__*/React.createElement("select", {
+  return /*#__PURE__*/_react["default"].createElement("select", {
     className: "react-dynamic-table-page-limit",
     onChange: onChange,
     value: value
-  }, /*#__PURE__*/React.createElement("option", {
+  }, /*#__PURE__*/_react["default"].createElement("option", {
     value: 5
-  }, "5"), /*#__PURE__*/React.createElement("option", {
+  }, "5"), /*#__PURE__*/_react["default"].createElement("option", {
     value: 10
-  }, "10"), /*#__PURE__*/React.createElement("option", {
+  }, "10"), /*#__PURE__*/_react["default"].createElement("option", {
     value: 15
-  }, "15"), /*#__PURE__*/React.createElement("option", {
+  }, "15"), /*#__PURE__*/_react["default"].createElement("option", {
     value: 20
   }, "20"));
 };
@@ -57,15 +61,15 @@ var Pages = function Pages(_ref2) {
     }
   }
 
-  return /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/_react["default"].createElement("div", {
     className: "react-dynamic-table-pages"
-  }, /*#__PURE__*/React.createElement("a", {
+  }, /*#__PURE__*/_react["default"].createElement("a", {
     onClick: function onClick() {
       return onChange(value - 1);
     }
   }, "Previous"), pages.map(function (page) {
     var pad = "".concat(page).includes('pad');
-    return /*#__PURE__*/React.createElement("a", {
+    return /*#__PURE__*/_react["default"].createElement("a", {
       key: page,
       style: {
         cursor: !pad || 'not-allowed'
@@ -74,7 +78,7 @@ var Pages = function Pages(_ref2) {
         return pad || onChange(page);
       }
     }, !pad ? page : '...');
-  }), /*#__PURE__*/React.createElement("a", {
+  }), /*#__PURE__*/_react["default"].createElement("a", {
     onClick: function onClick() {
       return onChange(value + 1);
     }
