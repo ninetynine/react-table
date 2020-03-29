@@ -9,11 +9,17 @@ require("core-js/modules/es.string.includes");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Pages = exports.PageLimit = void 0;
+exports.Pages = exports.PageLimit = exports.NOOP = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var NOOP = function NOOP() {
+  return null;
+};
+
+exports.NOOP = NOOP;
 
 var PageLimit = function PageLimit(_ref) {
   var value = _ref.value,

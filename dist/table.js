@@ -36,6 +36,8 @@ require("core-js/modules/es.object.keys");
 
 require("core-js/modules/es.object.to-string");
 
+require("core-js/modules/es.parse-int");
+
 require("core-js/modules/es.regexp.constructor");
 
 require("core-js/modules/es.regexp.exec");
@@ -47,11 +49,6 @@ require("core-js/modules/es.string.iterator");
 require("core-js/modules/es.string.replace");
 
 require("core-js/modules/web.dom-collections.iterator");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -83,10 +80,6 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-var NOOP = function NOOP() {
-  return null;
-};
-
 var Table = function Table(_ref) {
   var rows = _ref.rows,
       rowRenderer = _ref.rowRenderer,
@@ -102,11 +95,15 @@ var Table = function Table(_ref) {
       pageLimit = _ref.pageLimit,
       pages = _ref.pages,
       actions = _ref.actions,
+      rowIsChecked = _ref.rowIsChecked,
+      masterIsChecked = _ref.masterIsChecked,
       onRowClick = _ref.onRowClick,
+      onRowCheckboxChange = _ref.onRowCheckboxChange,
       onPageLimitChange = _ref.onPageLimitChange,
       onPageChange = _ref.onPageChange,
+      onMasterCheckboxChange = _ref.onMasterCheckboxChange,
       className = _ref.className,
-      rest = _objectWithoutProperties(_ref, ["rows", "rowRenderer", "rowIdentifier", "emptyRow", "dataManipulator", "fieldMap", "fieldOrder", "fieldsToExclude", "fieldsToInclude", "header", "footer", "pageLimit", "pages", "actions", "onRowClick", "onPageLimitChange", "onPageChange", "className"]);
+      rest = _objectWithoutProperties(_ref, ["rows", "rowRenderer", "rowIdentifier", "emptyRow", "dataManipulator", "fieldMap", "fieldOrder", "fieldsToExclude", "fieldsToInclude", "header", "footer", "pageLimit", "pages", "actions", "rowIsChecked", "masterIsChecked", "onRowClick", "onRowCheckboxChange", "onPageLimitChange", "onPageChange", "onMasterCheckboxChange", "className"]);
 
   var _useSetState = (0, _reactUse.useSetState)({
     fields: []
@@ -234,23 +231,32 @@ var Table = function Table(_ref) {
   });
   return /*#__PURE__*/_react["default"].createElement("div", _extends({}, rest, {
     className: (0, _classnames["default"])([className, 'react-dynamic-table'])
-  }), /*#__PURE__*/_react["default"].createElement("table", null, header && /*#__PURE__*/_react["default"].createElement("thead", null, /*#__PURE__*/_react["default"].createElement("tr", null, $headers().map(function (header) {
+  }), /*#__PURE__*/_react["default"].createElement("table", null, header && /*#__PURE__*/_react["default"].createElement("thead", null, /*#__PURE__*/_react["default"].createElement("tr", null, onRowCheckboxChange !== _helpers.NOOP && /*#__PURE__*/_react["default"].createElement("th", null, onMasterCheckboxChange !== _helpers.NOOP && /*#__PURE__*/_react["default"].createElement("input", {
+    type: "checkbox",
+    checked: masterIsChecked(),
+    onChange: onMasterCheckboxChange
+  })), $headers().map(function (header) {
     return /*#__PURE__*/_react["default"].createElement("th", {
       key: header
     }, header);
-  }), !!actions && /*#__PURE__*/_react["default"].createElement("th", null))), /*#__PURE__*/_react["default"].createElement("tbody", null, !rows.length && emptyRow, !!rows.length && rows.map(function (row) {
+  }), actions !== null && /*#__PURE__*/_react["default"].createElement("th", null))), /*#__PURE__*/_react["default"].createElement("tbody", null, rows.length === 0 && emptyRow, rows.length > 0 && rows.map(function (row) {
+    var id = rowIdentifier(row);
     return rowRenderer({
+      key: id,
       row: row,
-      rowIdentifier: rowIdentifier,
       fields: state.fields,
       dataManipulator: dataManipulator,
       actions: actions,
-      onClick: onRowClick !== NOOP ? onRowClick : undefined
+      isChecked: rowIsChecked(id),
+      onClick: onRowClick !== _helpers.NOOP ? onRowClick : undefined,
+      onToggle: onRowCheckboxChange !== _helpers.NOOP ? function () {
+        return onRowCheckboxChange(id);
+      } : undefined
     });
-  })), (footer !== NOOP || pageLimit !== NOOP) && /*#__PURE__*/_react["default"].createElement("tfoot", null, typeof footer === 'function' && footer({
+  })), (footer !== _helpers.NOOP || pageLimit !== _helpers.NOOP) && /*#__PURE__*/_react["default"].createElement("tfoot", null, typeof footer === 'function' && footer({
     rows: rows,
-    width: state.fields.length + (actions ? 1 : 0)
-  }), typeof footer !== 'function' && footer, (pageLimit !== NOOP || pages !== NOOP) && /*#__PURE__*/_react["default"].createElement("tr", null, /*#__PURE__*/_react["default"].createElement("td", null, typeof pageLimit === 'function' && pageLimit({
+    width: state.fields.length + parseInt(actions !== null) + parseInt(onRowCheckboxChange !== _helpers.NOOP)
+  }), typeof footer !== 'function' && footer, (pageLimit !== _helpers.NOOP || pages !== _helpers.NOOP) && /*#__PURE__*/_react["default"].createElement("tr", null, /*#__PURE__*/_react["default"].createElement("td", null, typeof pageLimit === 'function' && pageLimit({
     onChange: onPageLimitChange
   }), typeof pageLimit !== 'function' && pageLimit), /*#__PURE__*/_react["default"].createElement("td", null, typeof pages === 'function' && pages({
     onChange: onPageChange
@@ -265,16 +271,22 @@ Table.defaultProps = {
     return row.id;
   },
   rowRenderer: function rowRenderer(_ref2) {
-    var row = _ref2.row,
-        rowIdentifier = _ref2.rowIdentifier,
+    var key = _ref2.key,
+        row = _ref2.row,
         fields = _ref2.fields,
         dataManipulator = _ref2.dataManipulator,
         actions = _ref2.actions,
-        onClick = _ref2.onClick;
+        isChecked = _ref2.isChecked,
+        onClick = _ref2.onClick,
+        onToggle = _ref2.onToggle;
     return /*#__PURE__*/_react["default"].createElement("tr", {
-      key: rowIdentifier(row),
+      key: key,
       onClick: onClick
-    }, fields.map(function (field) {
+    }, onToggle && /*#__PURE__*/_react["default"].createElement("td", null, /*#__PURE__*/_react["default"].createElement("input", {
+      type: "checkbox",
+      checked: isChecked,
+      onChange: onToggle
+    })), fields.map(function (field) {
       return /*#__PURE__*/_react["default"].createElement("td", {
         key: field
       }, dataManipulator({
@@ -296,14 +308,19 @@ Table.defaultProps = {
   fieldsToInclude: [],
   //
   header: true,
-  footer: NOOP,
-  pageLimit: NOOP,
-  pages: NOOP,
+  footer: _helpers.NOOP,
+  pageLimit: _helpers.NOOP,
+  pages: _helpers.NOOP,
   actions: null,
   //
-  onRowClick: NOOP,
-  onPageLimitChange: NOOP,
-  onPageChange: NOOP
+  rowIsChecked: _helpers.NOOP,
+  masterIsChecked: _helpers.NOOP,
+  //
+  onRowClick: _helpers.NOOP,
+  onRowCheckboxChange: _helpers.NOOP,
+  onPageLimitChange: _helpers.NOOP,
+  onPageChange: _helpers.NOOP,
+  onMasterCheckboxChange: _helpers.NOOP
 };
 Table.propTypes = {
   rows: _propTypes["default"].arrayOf(_propTypes["default"].object),
@@ -323,9 +340,12 @@ Table.propTypes = {
   pages: _propTypes["default"].oneOfType([_propTypes["default"].node, _propTypes["default"].func]),
   actions: _propTypes["default"].node,
   //
+  rowIsChecked: _propTypes["default"].func,
+  masterIsChecked: _propTypes["default"].func,
+  //
   onRowClick: _propTypes["default"].func,
+  onRowCheckboxChange: _propTypes["default"].func,
   onPageLimitChange: _propTypes["default"].func,
-  onPageChange: _propTypes["default"].func
+  onPageChange: _propTypes["default"].func,
+  onMasterCheckboxChange: _propTypes["default"].func
 };
-var _default = Table;
-exports["default"] = _default;

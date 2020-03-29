@@ -34,7 +34,7 @@
   "homepage": "https://github.com/ninetynine/react-table#readme",
   "husky": {
     "hooks": {
-      "pre-commit": "npm run js:lint"
+      "pre-commit": "npm run js:lint && npm run build:js && git add dist"
     }
   },
   "standard": {
