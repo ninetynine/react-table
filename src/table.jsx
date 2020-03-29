@@ -3,9 +3,7 @@ import { useSetState, useMount } from 'react-use'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-import { PageLimit, Pages } from './helpers'
-
-const NOOP = () => null
+import { NOOP, PageLimit, Pages } from './helpers'
 
 const Table = (
   {
@@ -26,9 +24,14 @@ const Table = (
     pages,
     actions,
     //
+    rowIsChecked,
+    masterIsChecked,
+    //
     onRowClick,
+    onRowCheckboxChange,
     onPageLimitChange,
     onPageChange,
+    onMasterCheckboxChange,
     //
     className,
     ...rest
@@ -164,37 +167,61 @@ const Table = (
         {header && (
           <thead>
             <tr>
+              {onRowCheckboxChange !== NOOP && (
+                <th>
+                  {onMasterCheckboxChange !== NOOP && (
+                    <input
+                      type='checkbox'
+                      checked={masterIsChecked()}
+                      onChange={onMasterCheckboxChange}
+                    />
+                  )}
+                </th>
+              )}
               {$headers().map(header => (
                 <th key={header}>
                   {header}
                 </th>
               ))}
-              {!!actions && <th />}
+              {actions !== null && <th />}
             </tr>
           </thead>
         )}
         <tbody>
-          {!rows.length && emptyRow}
-          {!!rows.length && rows.map(row => (
-            rowRenderer({
-              row,
-              rowIdentifier,
-              fields: state.fields,
-              dataManipulator,
-              actions,
-              onClick: (
-                onRowClick !== NOOP
-                  ? onRowClick : undefined
-              )
-            })
-          ))}
+          {rows.length === 0 && emptyRow}
+          {rows.length > 0 && rows.map(row => {
+            const id = rowIdentifier(row)
+
+            return (
+              rowRenderer({
+                key: id,
+                row,
+                fields: state.fields,
+                dataManipulator,
+                actions,
+                isChecked: rowIsChecked(id),
+                onClick: (
+                  onRowClick !== NOOP
+                    ? onRowClick : undefined
+                ),
+                onToggle: (
+                  onRowCheckboxChange !== NOOP
+                    ? () => onRowCheckboxChange(id) : undefined
+                )
+              })
+            )
+          })}
         </tbody>
         {(footer !== NOOP || pageLimit !== NOOP) && (
           <tfoot>
             {typeof footer === 'function' && (
               footer({
                 rows,
-                width: state.fields.length + (actions ? 1 : 0)
+                width: (
+                  state.fields.length +
+                  parseInt(actions !== null) +
+                  parseInt(onRowCheckboxChange !== NOOP)
+                )
               })
             )}
             {typeof footer !== 'function' && footer}
@@ -231,11 +258,20 @@ Table.pages = Pages
 Table.defaultProps = {
   rows: [],
   rowIdentifier: row => row.id,
-  rowRenderer: ({ row, rowIdentifier, fields, dataManipulator, actions, onClick }) => (
+  rowRenderer: ({ key, row, fields, dataManipulator, actions, isChecked, onClick, onToggle }) => (
     <tr
-      key={rowIdentifier(row)}
+      key={key}
       onClick={onClick}
     >
+      {onToggle && (
+        <td>
+          <input
+            type='checkbox'
+            checked={isChecked}
+            onChange={onToggle}
+          />
+        </td>
+      )}
       {fields.map(field => (
         <td key={field}>
           {dataManipulator({
@@ -267,9 +303,14 @@ Table.defaultProps = {
   pages: NOOP,
   actions: null,
   //
+  rowIsChecked: NOOP,
+  masterIsChecked: NOOP,
+  //
   onRowClick: NOOP,
+  onRowCheckboxChange: NOOP,
   onPageLimitChange: NOOP,
-  onPageChange: NOOP
+  onPageChange: NOOP,
+  onMasterCheckboxChange: NOOP
 }
 
 Table.propTypes = {
@@ -311,9 +352,12 @@ Table.propTypes = {
   ]),
   actions: PropTypes.node,
   //
+  rowIsChecked: PropTypes.func,
+  masterIsChecked: PropTypes.func,
+  //
   onRowClick: PropTypes.func,
+  onRowCheckboxChange: PropTypes.func,
   onPageLimitChange: PropTypes.func,
-  onPageChange: PropTypes.func
+  onPageChange: PropTypes.func,
+  onMasterCheckboxChange: PropTypes.func
 }
-
-export default Table

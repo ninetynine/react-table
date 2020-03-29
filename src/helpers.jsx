@@ -1,5 +1,7 @@
 import React from 'react'
 
+export const NOOP = () => null
+
 export const PageLimit = ({ value, onChange }) => (
   <select
     className='react-dynamic-table-page-limit'
