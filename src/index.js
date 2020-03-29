@@ -1,5 +1,10 @@
 import Table from './table'
+import { PageLimit, Pages } from './helpers'
 
-export default {
-  Table
+export {
+  Table,
+  PageLimit,
+  Pages
 }
+
+export default Table

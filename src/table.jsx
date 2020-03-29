@@ -3,6 +3,8 @@ import { useSetState, useMount } from 'react-use'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import { PageLimit, Pages } from './helpers'
+
 const NOOP = () => null
 
 const Table = (
@@ -10,16 +12,24 @@ const Table = (
     rows,
     rowRenderer,
     rowIdentifier,
-    onRowClick,
     emptyRow,
     dataManipulator,
+    //
     fieldMap,
     fieldOrder,
     fieldsToExclude,
     fieldsToInclude,
+    //
     header,
     footer,
+    pageLimit,
+    pages,
     actions,
+    //
+    onRowClick,
+    onPageLimitChange,
+    onPageChange,
+    //
     className,
     ...rest
   }
@@ -123,7 +133,7 @@ const Table = (
             })
           ))}
         </tbody>
-        {!!footer && (
+        {(footer !== NOOP || pageLimit !== NOOP) && (
           <tfoot>
             {typeof footer === 'function' && (
               footer({
@@ -132,12 +142,35 @@ const Table = (
               })
             )}
             {typeof footer !== 'function' && footer}
+            {(pageLimit !== NOOP || pages !== NOOP) && (
+              <tr>
+                <td>
+                  {typeof pageLimit === 'function' && (
+                    pageLimit({
+                      onChange: onPageLimitChange
+                    })
+                  )}
+                  {typeof pageLimit !== 'function' && pageLimit}
+                </td>
+                <td>
+                  {typeof pages === 'function' && (
+                    pages({
+                      onChange: onPageChange
+                    })
+                  )}
+                  {typeof pages !== 'function' && pages}
+                </td>
+              </tr>
+            )}
           </tfoot>
         )}
       </table>
     </div>
   )
 }
+
+Table.pageLimit = PageLimit
+Table.pages = Pages
 
 Table.defaultProps = {
   rows: [],
@@ -157,7 +190,6 @@ Table.defaultProps = {
       {actions}
     </tr>
   ),
-  onRowClick: NOOP,
   emptyRow: (
     <tr>
       <td>There's nothing here.</td>
@@ -167,31 +199,50 @@ Table.defaultProps = {
     value !== null && value !== undefined
       ? value : '-'
   ),
+  //
   fieldMap: {},
   fieldOrder: [],
   fieldsToExclude: [],
   fieldsToInclude: [],
+  //
   header: true,
-  footer: null,
-  actions: null
+  footer: NOOP,
+  pageLimit: NOOP,
+  pages: NOOP,
+  actions: null,
+  //
+  onRowClick: NOOP,
+  onPageLimitChange: NOOP,
+  onPageChange: NOOP
 }
 
 Table.propTypes = {
   rows: PropTypes.arrayOf(PropTypes.object),
   rowIdentifier: PropTypes.func,
   rowRenderer: PropTypes.func,
-  onRowClick: PropTypes.func,
   emptyRow: PropTypes.node,
   dataManipulator: PropTypes.func,
+  //
   fieldMap: PropTypes.object,
   fieldOrder: PropTypes.arrayOf(PropTypes.string),
   fieldsToExclude: PropTypes.arrayOf(PropTypes.string),
   fieldsToInclude: PropTypes.arrayOf(PropTypes.string),
+  //
   header: PropTypes.bool,
   footer: PropTypes.oneOfType([
     PropTypes.node, PropTypes.func
   ]),
-  actions: PropTypes.node
+  pageLimit: PropTypes.oneOfType([
+    PropTypes.node, PropTypes.func
+  ]),
+  pages: PropTypes.oneOfType([
+    PropTypes.node, PropTypes.func
+  ]),
+  actions: PropTypes.node,
+  //
+  onRowClick: PropTypes.func,
+  onPageLimitChange: PropTypes.func,
+  onPageChange: PropTypes.func
 }
 
 export default Table
