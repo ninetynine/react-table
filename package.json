@@ -1,0 +1,63 @@
+{
+  "name": "@ninetynine/react-table",
+  "version": "1.0.0",
+  "description": "A package that provides a managed React table for both static and dynamic data",
+  "author": "Dexter Marks-Barber <dexter@marks-barber.co.uk>",
+  "license": "LGPL-3.0-only",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run js:build",
+    "js:build": "node ./node_modules/@babel/cli/bin/babel src/ --out-dir dist/",
+    "js:lint": "standard",
+    "js:fix": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ninetynine/react-table.git"
+  },
+  "keywords": [
+    "react",
+    "table",
+    "data table",
+    "html",
+    "dynamic",
+    "ajax",
+    "react-dom",
+    "react-use",
+    "component",
+    "static"
+  ],
+  "bugs": {
+    "url": "https://github.com/ninetynine/react-table/issues"
+  },
+  "homepage": "https://github.com/ninetynine/react-table#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run js:lint"
+    }
+  },
+  "standard": {
+    "ignore": [
+      "dist"
+    ]
+  },
+  "peerDependencies": {
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
+  },
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "core-js": "3",
+    "prop-types": "^15.7.2",
+    "react-use": "^13.27.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "husky": "^4.2.3",
+    "standard": "^14.3.3"
+  }
+}
