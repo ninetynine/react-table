@@ -59,6 +59,8 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
+var _helpers = require("./helpers");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
@@ -87,7 +89,6 @@ var Table = function Table(_ref) {
   var rows = _ref.rows,
       rowRenderer = _ref.rowRenderer,
       rowIdentifier = _ref.rowIdentifier,
-      onRowClick = _ref.onRowClick,
       emptyRow = _ref.emptyRow,
       dataManipulator = _ref.dataManipulator,
       fieldMap = _ref.fieldMap,
@@ -96,9 +97,14 @@ var Table = function Table(_ref) {
       fieldsToInclude = _ref.fieldsToInclude,
       header = _ref.header,
       footer = _ref.footer,
+      pageLimit = _ref.pageLimit,
+      pages = _ref.pages,
       actions = _ref.actions,
+      onRowClick = _ref.onRowClick,
+      onPageLimitChange = _ref.onPageLimitChange,
+      onPageChange = _ref.onPageChange,
       className = _ref.className,
-      rest = _objectWithoutProperties(_ref, ["rows", "rowRenderer", "rowIdentifier", "onRowClick", "emptyRow", "dataManipulator", "fieldMap", "fieldOrder", "fieldsToExclude", "fieldsToInclude", "header", "footer", "actions", "className"]);
+      rest = _objectWithoutProperties(_ref, ["rows", "rowRenderer", "rowIdentifier", "emptyRow", "dataManipulator", "fieldMap", "fieldOrder", "fieldsToExclude", "fieldsToInclude", "header", "footer", "pageLimit", "pages", "actions", "onRowClick", "onPageLimitChange", "onPageChange", "className"]);
 
   var _useSetState = (0, _reactUse.useSetState)({
     fields: []
@@ -175,12 +181,18 @@ var Table = function Table(_ref) {
       actions: actions,
       onClick: onRowClick !== NOOP ? onRowClick : undefined
     });
-  })), !!footer && /*#__PURE__*/_react["default"].createElement("tfoot", null, typeof footer === 'function' && footer({
+  })), (footer !== NOOP || pageLimit !== NOOP) && /*#__PURE__*/_react["default"].createElement("tfoot", null, typeof footer === 'function' && footer({
     rows: rows,
     width: state.fields.length + (actions ? 1 : 0)
-  }), typeof footer !== 'function' && footer)));
+  }), typeof footer !== 'function' && footer, (pageLimit !== NOOP || pages !== NOOP) && /*#__PURE__*/_react["default"].createElement("tr", null, /*#__PURE__*/_react["default"].createElement("td", null, typeof pageLimit === 'function' && pageLimit({
+    onChange: onPageLimitChange
+  }), typeof pageLimit !== 'function' && pageLimit), /*#__PURE__*/_react["default"].createElement("td", null, typeof pages === 'function' && pages({
+    onChange: onPageChange
+  }), typeof pages !== 'function' && pages)))));
 };
 
+Table.pageLimit = _helpers.PageLimit;
+Table.pages = _helpers.Pages;
 Table.defaultProps = {
   rows: [],
   rowIdentifier: function rowIdentifier(row) {
@@ -206,34 +218,48 @@ Table.defaultProps = {
       }));
     }), actions);
   },
-  onRowClick: NOOP,
   emptyRow: /*#__PURE__*/_react["default"].createElement("tr", null, /*#__PURE__*/_react["default"].createElement("td", null, "There's nothing here.")),
   dataManipulator: function dataManipulator(_ref3) {
     var value = _ref3.value;
     return value !== null && value !== undefined ? value : '-';
   },
+  //
   fieldMap: {},
   fieldOrder: [],
   fieldsToExclude: [],
   fieldsToInclude: [],
+  //
   header: true,
-  footer: null,
-  actions: null
+  footer: NOOP,
+  pageLimit: NOOP,
+  pages: NOOP,
+  actions: null,
+  //
+  onRowClick: NOOP,
+  onPageLimitChange: NOOP,
+  onPageChange: NOOP
 };
 Table.propTypes = {
   rows: _propTypes["default"].arrayOf(_propTypes["default"].object),
   rowIdentifier: _propTypes["default"].func,
   rowRenderer: _propTypes["default"].func,
-  onRowClick: _propTypes["default"].func,
   emptyRow: _propTypes["default"].node,
   dataManipulator: _propTypes["default"].func,
+  //
   fieldMap: _propTypes["default"].object,
   fieldOrder: _propTypes["default"].arrayOf(_propTypes["default"].string),
   fieldsToExclude: _propTypes["default"].arrayOf(_propTypes["default"].string),
   fieldsToInclude: _propTypes["default"].arrayOf(_propTypes["default"].string),
+  //
   header: _propTypes["default"].bool,
   footer: _propTypes["default"].oneOfType([_propTypes["default"].node, _propTypes["default"].func]),
-  actions: _propTypes["default"].node
+  pageLimit: _propTypes["default"].oneOfType([_propTypes["default"].node, _propTypes["default"].func]),
+  pages: _propTypes["default"].oneOfType([_propTypes["default"].node, _propTypes["default"].func]),
+  actions: _propTypes["default"].node,
+  //
+  onRowClick: _propTypes["default"].func,
+  onPageLimitChange: _propTypes["default"].func,
+  onPageChange: _propTypes["default"].func
 };
 var _default = Table;
 exports["default"] = _default;
