@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSetState, useMount } from 'react-use'
+import { useSetState, useMount, useUpdateEffect } from 'react-use'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
@@ -155,6 +155,13 @@ const Table = (
       fields: $fields()
     })
   })
+
+  // Only get fields when rows update
+  useUpdateEffect(() => {
+    setState({
+      fields: $fields()
+    })
+  }, [rows])
 
   return (
     <div
