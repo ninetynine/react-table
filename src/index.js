@@ -1,10 +1,13 @@
-import Table from './table'
 import { PageLimit, Pages } from './helpers'
 
+import Table from './table'
+import AjaxTable from './ajax-table'
+
 export {
-  Table,
   PageLimit,
-  Pages
+  Pages,
+  Table,
+  AjaxTable
 }
 
 export default Table
