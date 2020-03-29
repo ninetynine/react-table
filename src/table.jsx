@@ -43,36 +43,92 @@ const Table = (
     }
 
     const row = rows[0]
-    const fields = Object.keys(row)
+    let fields = Object.keys(row)
+
+    // Fields to exclude
+    const regexFieldsToExclude = fieldsToExclude.filter(e => typeof e !== 'string')
+    const stringFieldsToExclude = fieldsToExclude.filter(e => typeof e === 'string')
+
+    // Fields to include
+    const regexFieldsToInclude = fieldsToInclude.filter(e => typeof e !== 'string')
+    const stringFieldsToInclude = fieldsToInclude.filter(e => typeof e === 'string')
 
     for (let i = 0; i < fields.length; i++) {
       const field = fields[i]
 
-      // If there are fields to exclude defined, and current field is found then null it
-      if (fieldsToExclude.length && fieldsToExclude.indexOf(field) > -1) {
+      // Check for string exclusions
+      if (stringFieldsToExclude.length && stringFieldsToExclude.indexOf(field) > -1) {
         fields.splice(i, 1, null)
 
         continue
       }
 
-      // If there are fields to include defined, and current field is not found then null it
-      if (fieldsToInclude.length && fieldsToInclude.indexOf(field) < 0) {
+      // Check for regex exclusions
+      if (regexFieldsToExclude.length) {
+        let found = false
+
+        for (let r = 0; r < regexFieldsToExclude.length; r++) {
+          if (regexFieldsToExclude[r].test(field)) {
+            fields.splice(i, 1, null)
+            found = true
+
+            break
+          }
+        }
+
+        if (found) {
+          continue
+        }
+      }
+
+      // Check for string inclusions
+      if (stringFieldsToInclude.length && stringFieldsToInclude.indexOf(field) < 0) {
         fields.splice(i, 1, null)
 
         continue
+      }
+
+      // Check for regex inclusions
+      if (regexFieldsToInclude.length) {
+        let found = false
+
+        for (let r = 0; r < regexFieldsToInclude.length; r++) {
+          if (!regexFieldsToInclude[r].test(field)) {
+            fields.splice(i, 1, null)
+            found = true
+
+            break
+          }
+        }
+
+        if (found) {
+          continue
+        }
       }
     }
 
-    return (
-      fields
-        .slice()
-        // Sort fields
-        .sort((a, b) => (
-          fieldOrder.indexOf(b) < fieldOrder.indexOf(a) ? -1 : 0
+    fields = fields.filter(e => e)
+
+    const ordered = []
+
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i]
+      const index = (
+        fieldOrder.findIndex(order => (
+          typeof order !== 'string'
+            ? order.test(field)
+            : order === field
         ))
-        // Filter out nulled fields
-        .filter(e => e)
-    )
+      )
+
+      if (index > -1) {
+        ordered.splice(index, 0, field)
+      } else {
+        ordered.push(field)
+      }
+    }
+
+    return ordered
   }
 
   // Return headers
@@ -224,9 +280,24 @@ Table.propTypes = {
   dataManipulator: PropTypes.func,
   //
   fieldMap: PropTypes.object,
-  fieldOrder: PropTypes.arrayOf(PropTypes.string),
-  fieldsToExclude: PropTypes.arrayOf(PropTypes.string),
-  fieldsToInclude: PropTypes.arrayOf(PropTypes.string),
+  fieldOrder: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.instanceOf(RegExp)
+    ])
+  ),
+  fieldsToExclude: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.instanceOf(RegExp)
+    ])
+  ),
+  fieldsToInclude: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.instanceOf(RegExp)
+    ])
+  ),
   //
   header: PropTypes.bool,
   footer: PropTypes.oneOfType([

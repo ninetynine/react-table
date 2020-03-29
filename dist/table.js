@@ -10,6 +10,8 @@ require("core-js/modules/es.array.concat");
 
 require("core-js/modules/es.array.filter");
 
+require("core-js/modules/es.array.find-index");
+
 require("core-js/modules/es.array.from");
 
 require("core-js/modules/es.array.index-of");
@@ -22,8 +24,6 @@ require("core-js/modules/es.array.map");
 
 require("core-js/modules/es.array.slice");
 
-require("core-js/modules/es.array.sort");
-
 require("core-js/modules/es.array.splice");
 
 require("core-js/modules/es.date.to-string");
@@ -35,6 +35,8 @@ require("core-js/modules/es.object.assign");
 require("core-js/modules/es.object.keys");
 
 require("core-js/modules/es.object.to-string");
+
+require("core-js/modules/es.regexp.constructor");
 
 require("core-js/modules/es.regexp.exec");
 
@@ -120,30 +122,94 @@ var Table = function Table(_ref) {
     }
 
     var row = rows[0];
-    var fields = Object.keys(row);
+    var fields = Object.keys(row); // Fields to exclude
+
+    var regexFieldsToExclude = fieldsToExclude.filter(function (e) {
+      return typeof e !== 'string';
+    });
+    var stringFieldsToExclude = fieldsToExclude.filter(function (e) {
+      return typeof e === 'string';
+    }); // Fields to include
+
+    var regexFieldsToInclude = fieldsToInclude.filter(function (e) {
+      return typeof e !== 'string';
+    });
+    var stringFieldsToInclude = fieldsToInclude.filter(function (e) {
+      return typeof e === 'string';
+    });
 
     for (var i = 0; i < fields.length; i++) {
-      var field = fields[i]; // If there are fields to exclude defined, and current field is found then null it
+      var field = fields[i]; // Check for string exclusions
 
-      if (fieldsToExclude.length && fieldsToExclude.indexOf(field) > -1) {
+      if (stringFieldsToExclude.length && stringFieldsToExclude.indexOf(field) > -1) {
         fields.splice(i, 1, null);
         continue;
-      } // If there are fields to include defined, and current field is not found then null it
+      } // Check for regex exclusions
 
 
-      if (fieldsToInclude.length && fieldsToInclude.indexOf(field) < 0) {
+      if (regexFieldsToExclude.length) {
+        var found = false;
+
+        for (var r = 0; r < regexFieldsToExclude.length; r++) {
+          if (regexFieldsToExclude[r].test(field)) {
+            fields.splice(i, 1, null);
+            found = true;
+            break;
+          }
+        }
+
+        if (found) {
+          continue;
+        }
+      } // Check for string inclusions
+
+
+      if (stringFieldsToInclude.length && stringFieldsToInclude.indexOf(field) < 0) {
         fields.splice(i, 1, null);
         continue;
+      } // Check for regex inclusions
+
+
+      if (regexFieldsToInclude.length) {
+        var _found = false;
+
+        for (var _r = 0; _r < regexFieldsToInclude.length; _r++) {
+          if (!regexFieldsToInclude[_r].test(field)) {
+            fields.splice(i, 1, null);
+            _found = true;
+            break;
+          }
+        }
+
+        if (_found) {
+          continue;
+        }
       }
     }
 
-    return fields.slice() // Sort fields
-    .sort(function (a, b) {
-      return fieldOrder.indexOf(b) < fieldOrder.indexOf(a) ? -1 : 0;
-    }) // Filter out nulled fields
-    .filter(function (e) {
+    fields = fields.filter(function (e) {
       return e;
     });
+    var ordered = [];
+
+    var _loop = function _loop(_i2) {
+      var field = fields[_i2];
+      var index = fieldOrder.findIndex(function (order) {
+        return typeof order !== 'string' ? order.test(field) : order === field;
+      });
+
+      if (index > -1) {
+        ordered.splice(index, 0, field);
+      } else {
+        ordered.push(field);
+      }
+    };
+
+    for (var _i2 = 0; _i2 < fields.length; _i2++) {
+      _loop(_i2);
+    }
+
+    return ordered;
   }; // Return headers
 
 
@@ -247,9 +313,9 @@ Table.propTypes = {
   dataManipulator: _propTypes["default"].func,
   //
   fieldMap: _propTypes["default"].object,
-  fieldOrder: _propTypes["default"].arrayOf(_propTypes["default"].string),
-  fieldsToExclude: _propTypes["default"].arrayOf(_propTypes["default"].string),
-  fieldsToInclude: _propTypes["default"].arrayOf(_propTypes["default"].string),
+  fieldOrder: _propTypes["default"].arrayOf(_propTypes["default"].oneOfType([_propTypes["default"].string, _propTypes["default"].instanceOf(RegExp)])),
+  fieldsToExclude: _propTypes["default"].arrayOf(_propTypes["default"].oneOfType([_propTypes["default"].string, _propTypes["default"].instanceOf(RegExp)])),
+  fieldsToInclude: _propTypes["default"].arrayOf(_propTypes["default"].oneOfType([_propTypes["default"].string, _propTypes["default"].instanceOf(RegExp)])),
   //
   header: _propTypes["default"].bool,
   footer: _propTypes["default"].oneOfType([_propTypes["default"].node, _propTypes["default"].func]),
