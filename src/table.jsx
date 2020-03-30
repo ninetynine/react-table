@@ -28,10 +28,10 @@ const Table = (
     masterIsChecked,
     //
     onRowClick,
-    onRowCheckboxChange,
+    onRowToggle,
     onPageLimitChange,
     onPageChange,
-    onMasterCheckboxChange,
+    onMasterToggle,
     //
     className,
     ...rest
@@ -174,13 +174,13 @@ const Table = (
         {header && (
           <thead>
             <tr>
-              {onRowCheckboxChange !== NOOP && (
+              {onRowToggle !== NOOP && (
                 <th>
-                  {onMasterCheckboxChange !== NOOP && (
+                  {onMasterToggle !== NOOP && (
                     <input
                       type='checkbox'
                       checked={masterIsChecked()}
-                      onChange={onMasterCheckboxChange}
+                      onChange={onMasterToggle}
                     />
                   )}
                 </th>
@@ -190,7 +190,7 @@ const Table = (
                   {header}
                 </th>
               ))}
-              {actions !== null && <th />}
+              {actions !== NOOP && <th />}
             </tr>
           </thead>
         )}
@@ -205,15 +205,18 @@ const Table = (
                 row,
                 fields: state.fields,
                 dataManipulator,
-                actions,
                 isChecked: rowIsChecked(id),
+                actions: (
+                  actions !== NOOP
+                    ? actions(row) : undefined
+                ),
                 onClick: (
                   onRowClick !== NOOP
-                    ? onRowClick : undefined
+                    ? event => onRowClick(id, event) : undefined
                 ),
                 onToggle: (
-                  onRowCheckboxChange !== NOOP
-                    ? () => onRowCheckboxChange(id) : undefined
+                  onRowToggle !== NOOP
+                    ? () => onRowToggle(id) : undefined
                 )
               })
             )
@@ -226,8 +229,8 @@ const Table = (
                 rows,
                 width: (
                   state.fields.length +
-                  parseInt(actions !== null) +
-                  parseInt(onRowCheckboxChange !== NOOP)
+                  parseInt(actions !== NOOP) +
+                  parseInt(onRowToggle !== NOOP)
                 )
               })
             )}
@@ -286,7 +289,9 @@ Table.defaultProps = {
           })}
         </td>
       ))}
-      {actions}
+      {!!actions && (
+        <td>{actions}</td>
+      )}
     </tr>
   ),
   emptyRow: (
@@ -294,10 +299,17 @@ Table.defaultProps = {
       <td>There's nothing here.</td>
     </tr>
   ),
-  dataManipulator: ({ value }) => (
-    value !== null && value !== undefined
-      ? value : '-'
-  ),
+  dataManipulator: ({ value }) => {
+    if (value === null || value === undefined) {
+      return '-'
+    }
+
+    if (!React.isValidElement(value) && typeof value === 'object') {
+      return <i>Hidden</i>
+    }
+
+    return value
+  },
   //
   fieldMap: {},
   fieldOrder: [],
@@ -308,16 +320,16 @@ Table.defaultProps = {
   footer: NOOP,
   pageLimit: NOOP,
   pages: NOOP,
-  actions: null,
+  actions: NOOP,
   //
   rowIsChecked: NOOP,
   masterIsChecked: NOOP,
   //
   onRowClick: NOOP,
-  onRowCheckboxChange: NOOP,
+  onRowToggle: NOOP,
   onPageLimitChange: NOOP,
   onPageChange: NOOP,
-  onMasterCheckboxChange: NOOP
+  onMasterToggle: NOOP
 }
 
 Table.propTypes = {
@@ -357,14 +369,16 @@ Table.propTypes = {
   pages: PropTypes.oneOfType([
     PropTypes.node, PropTypes.func
   ]),
-  actions: PropTypes.node,
+  actions: PropTypes.func,
   //
   rowIsChecked: PropTypes.func,
   masterIsChecked: PropTypes.func,
   //
   onRowClick: PropTypes.func,
-  onRowCheckboxChange: PropTypes.func,
+  onRowToggle: PropTypes.func,
   onPageLimitChange: PropTypes.func,
   onPageChange: PropTypes.func,
-  onMasterCheckboxChange: PropTypes.func
+  onMasterToggle: PropTypes.func
 }
+
+export default Table
