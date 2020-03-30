@@ -1,7 +1,7 @@
+/* globals fetch */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useSetState, useMount, useUpdateEffect } from 'react-use'
-import axios from 'axios'
 
 import { NOOP } from './helpers'
 import Table from './table'
@@ -9,13 +9,15 @@ import Table from './table'
 const AjaxTable = ({ url, params, responseManipulator, onLoad, rows, loadingRow, emptyRow, ...rest }) => {
   const [state, setState] = useSetState({ loading: true, rows })
 
-  const get = async () => {
-    const { data: response } = await axios.get(url, { params })
-    const rows = responseManipulator(response)
-
-    setState({ loading: false, rows })
-    onLoad(rows)
-  }
+  const get = () => (
+    fetch(url, { credentials: 'include' })
+      .then(response => response.json())
+      .then(response => responseManipulator(response))
+      .then(rows => {
+        setState({ loading: false, rows })
+        onLoad(rows)
+      })
+  )
 
   // Get rows when mounted
   useMount(() => { get() })
