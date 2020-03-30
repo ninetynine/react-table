@@ -35,6 +35,6 @@ Props
   * Checkboxes
     * [`rowIsChecked`](./table/row-is-checked.md): Define a callback to determine if a row checkbox is checked
     * [`masterIsChecked`](./table/master-is-checked.md): Define a callback to determine if the master checkbox is checked
-    * [`onRowCheckboxChange`](./table/on-row-checkbox-change.md): Define a row checkbox change callback
-    * [`onMasterCheckboxChange`](./table/on-master-checkbox-change.md):
+    * [`onRowToggle`](./table/on-row-toggle.md): Define a row checkbox change callback
+    * [`onMasterToggle`](./table/on-master-toggle.md):
     Define a master checkbox change callback
