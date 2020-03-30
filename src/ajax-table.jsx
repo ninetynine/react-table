@@ -9,8 +9,15 @@ import Table from './table'
 const AjaxTable = ({ url, params, responseManipulator, onLoad, rows, loadingRow, emptyRow, ...rest }) => {
   const [state, setState] = useSetState({ loading: true, rows })
 
+  // Convert params object to query string
+  const esc = encodeURIComponent
+  const $params = Object.keys(params).map(key => `${esc(key)}=${esc(params[key])}`).join('&')
+
+  // Append query string to URL
+  const $url = `${url}?${$params}`
+
   const get = () => (
-    fetch(url, { credentials: 'include' })
+    fetch($url, { credentials: 'include' })
       .then(response => response.json())
       .then(response => responseManipulator(response))
       .then(rows => {
