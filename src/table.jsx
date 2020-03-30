@@ -299,10 +299,17 @@ Table.defaultProps = {
       <td>There's nothing here.</td>
     </tr>
   ),
-  dataManipulator: ({ value }) => (
-    value !== null && value !== undefined
-      ? value : '-'
-  ),
+  dataManipulator: ({ value }) => {
+    if (value === null || value === undefined) {
+      return '-'
+    }
+
+    if (!React.isValidElement(value) && typeof value === 'object') {
+      return <i>Hidden</i>
+    }
+
+    return value
+  },
   //
   fieldMap: {},
   fieldOrder: [],
