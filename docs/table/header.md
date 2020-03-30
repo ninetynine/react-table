@@ -5,4 +5,10 @@
 <br />
 <br />
 
-_Documentation work in-progress._
+The `header` prop accepts a boolean to determine if field headers should be displayed or not. By default this is `true`.
+
+```jsx
+<Table
+  header={false}
+/>
+```
