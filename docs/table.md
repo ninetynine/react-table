@@ -1,5 +1,5 @@
 <div align="center">
-  <pre>import Table from '<a href="https://www.npmjs.com/package/react-table" target="_blank">@ninetyine/react-table</a>'</pre>
+  <pre>import { Table } from '<a href="https://www.npmjs.com/package/react-table" target="_blank">@ninetyine/react-table</a>'</pre>
 </div>
 
 <br />
