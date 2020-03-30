@@ -15,4 +15,4 @@ Props
   * [`params`](./ajax-table/params.md): An object that defines params to be passed as a query string when retrieving the dataset
   * [`responseManipulator`](./ajax-table/response-manipulator.md): Manipulate the response to return the dataset
   * [`onLoad`](./ajax-table/on-load.md): A callback which is triggered after the dataset is retrieved
-  * [`loadingRow`](./ajax-table/loading-row.md):
+  * [`loadingRow`](./ajax-table/loading-row.md): A valid React element to be displayed while the dataset is being retrieved
