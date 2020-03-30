@@ -373,3 +373,5 @@ Table.propTypes = {
   onPageChange: PropTypes.func,
   onMasterToggle: PropTypes.func
 }
+
+export default Table
