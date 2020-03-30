@@ -46,7 +46,7 @@ Use `Table` when data is not retrieved from an API endpoint. It's simple to get 
 
 ```jsx
 import React from 'react'
-import Table from '@ninetynine/react-table'
+import { Table } from '@ninetynine/react-table'
 
 const UsersTable = props => (
   <Table
