@@ -1,11 +1,11 @@
 <div align="center">
-  <pre>fieldWidth</pre>
+  <pre>fieldWidths</pre>
 </div>
 
 <br />
 <br />
 
-The `fieldWidth` prop should be an object of attributes and integers. This allows table cell widths to be defined for each field.
+The `fieldWidths` prop should be an object of attributes and integers. This allows table cell widths to be defined for each field.
 
 ```jsx
 <Table
@@ -19,7 +19,7 @@ The `fieldWidth` prop should be an object of attributes and integers. This allow
       name: 'Ervin Howell',
     }
   ]}
-  fieldWidth={{
+  fieldWidths={{
     id: 20
   }}
 />
