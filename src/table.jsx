@@ -3,7 +3,7 @@ import { useSetState, useMount, useUpdateEffect } from 'react-use'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-import { NOOP, PageLimit, Pages } from './helpers'
+import { NOOP, Row, PageLimit, Pages } from './helpers'
 
 const Table = (
   {
@@ -15,6 +15,7 @@ const Table = (
     //
     fieldMap,
     fieldOrder,
+    fieldWidths,
     fieldsToExclude,
     fieldsToInclude,
     //
@@ -136,7 +137,8 @@ const Table = (
 
   // Return headers
   const $headers = () => (
-    state.fields.map(field => (
+    state.fields.map(field => ([
+      field,
 
       // Field field is mapped then use the new name
       // Otherwise attempt to make it friendly to read
@@ -146,7 +148,7 @@ const Table = (
           .replace(/([A-Z])([A-Z])/g, (_, a, b) => `${a} ${b}`)
           .toLowerCase()
           .replace(/([ -_]|^)(.)/g, (_, a, b) => `${a ? ' ' : ''} ${b.toUpperCase()}`)
-    ))
+    ]))
   )
 
   // Only get fields once mounted
@@ -185,8 +187,11 @@ const Table = (
                   )}
                 </th>
               )}
-              {$headers().map(header => (
-                <th key={header}>
+              {$headers().map(([field, header]) => (
+                <th
+                  key={header}
+                  width={fieldWidths[field]}
+                >
                   {header}
                 </th>
               ))}
@@ -204,6 +209,7 @@ const Table = (
                 key: id,
                 row,
                 fields: state.fields,
+                fieldWidths,
                 dataManipulator,
                 isChecked: rowIsChecked(id),
                 actions: (
@@ -262,38 +268,14 @@ const Table = (
   )
 }
 
+Table.row = Row
 Table.pageLimit = PageLimit
 Table.pages = Pages
 
 Table.defaultProps = {
   rows: [],
   rowIdentifier: row => row.id,
-  rowRenderer: ({ key, row, fields, dataManipulator, actions, isChecked, onClick, onToggle }) => (
-    <tr
-      key={key}
-      onClick={onClick}
-    >
-      {onToggle && (
-        <td>
-          <input
-            type='checkbox'
-            checked={isChecked}
-            onChange={onToggle}
-          />
-        </td>
-      )}
-      {fields.map(field => (
-        <td key={field}>
-          {dataManipulator({
-            field, value: row[field], row
-          })}
-        </td>
-      ))}
-      {!!actions && (
-        <td>{actions}</td>
-      )}
-    </tr>
-  ),
+  rowRenderer: Row,
   emptyRow: (
     <tr>
       <td>There's nothing here.</td>
@@ -313,6 +295,7 @@ Table.defaultProps = {
   //
   fieldMap: {},
   fieldOrder: [],
+  fieldWidths: {},
   fieldsToExclude: [],
   fieldsToInclude: [],
   //
@@ -346,6 +329,7 @@ Table.propTypes = {
       PropTypes.instanceOf(RegExp)
     ])
   ),
+  fieldWidths: PropTypes.object,
   fieldsToExclude: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.string,

@@ -20,6 +20,7 @@ Props
 * Fields
   * [`fieldMap`](./table/field-map.md): Map fields to be displayed as headers
   * [`fieldOrder`](./table/field-order.md): Define the order in which fields are displayed
+  * [`fieldWidths`](./table/field-widths.md): Define the width for each field
   * [`fieldsToExclude`](./table/fields-to-exclude.md): Blacklist fields to display
   * [`fieldsToInclude`](./table/fields-to-include.md): Whitelist fields to display
 * Extras
