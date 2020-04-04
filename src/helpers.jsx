@@ -57,3 +57,33 @@ export const Pages = ({ value, total = 1, delta = 5, onChange }) => {
     </div>
   )
 }
+
+export const Row = ({ key, row, fields, fieldWidths, dataManipulator, actions, isChecked, onClick, onToggle }) => (
+  <tr
+    key={key}
+    onClick={onClick}
+  >
+    {onToggle && (
+      <td>
+        <input
+          type='checkbox'
+          checked={isChecked}
+          onChange={onToggle}
+        />
+      </td>
+    )}
+    {fields.map(field => (
+      <td
+        key={field}
+        width={fieldWidths[field]}
+      >
+        {dataManipulator({
+          field, value: row[field], row
+        })}
+      </td>
+    ))}
+    {!!actions && (
+      <td>{actions}</td>
+    )}
+  </tr>
+)
