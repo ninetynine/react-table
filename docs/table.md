@@ -8,6 +8,8 @@
 `Table` should be used when data is not retrieved from an API endpoint.
 It is also the basis for all other table components, such as [`AjaxTable`](/docs/ajax-table.md) which is built on top of this.
 
+By default the table container has the class of `react-dynamic-table`.
+
 <br />
 <br />
 
