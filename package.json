@@ -1,6 +1,6 @@
 {
   "name": "@ninetynine/react-table",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A package that provides a managed React table for both static and dynamic data",
   "author": "Dexter Marks-Barber <dexter@marks-barber.co.uk>",
   "license": "LGPL-3.0-only",
