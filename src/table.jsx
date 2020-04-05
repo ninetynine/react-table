@@ -169,7 +169,8 @@ const Table = (
     <div
       {...rest}
       className={classNames([
-        className, 'react-dynamic-table'
+        className, 'react-dynamic-table',
+        { 'react-dynamic-table-clickable': onRowClick !== NOOP }
       ])}
     >
       <table>
